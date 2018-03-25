@@ -70,6 +70,7 @@ void parabola(GLfloat midX,GLfloat midY) {
 	glFlush();
 }
 
+
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)//key입력을 받아 실행할 기능
 {
 	if (key == GLFW_KEY_UP && action == GLFW_PRESS)//위로 이동
