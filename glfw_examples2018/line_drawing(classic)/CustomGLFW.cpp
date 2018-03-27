@@ -108,7 +108,7 @@ void CustomGLFW::drawObj()
 	glBegin(GL_POINTS);
 	for (float theta = 0.0f; theta < 360.0f; theta += 1.0f)
 	{
-		const float rth = degreetoradian(theta);
+		const float rth = degree2radian(theta);
 
 		glm::vec3 point;
 		glm::mat3 rot_mat;//cos,sin...

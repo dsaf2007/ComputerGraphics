@@ -1,3 +1,4 @@
+
 #include "CustomGLFW.h"
 
 int CustomGLFW::initialize(const int width, const int height)

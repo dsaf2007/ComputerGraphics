@@ -15,7 +15,7 @@ int main(void)
 {
 	CustomGLFW my_glfw;
 
-	my_glfw.initialize(640, 480);
+	my_glfw.initialize(640, 640);
 	my_glfw.draw();
 
 	return 0;
