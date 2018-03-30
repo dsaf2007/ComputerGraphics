@@ -1,5 +1,5 @@
 #pragma once
-#define _CRT_SECURE_NO_WARNINGS
+
 #include <GLFW/glfw3.h>
 #include <cstring>
 #include <stdlib.h>		  // srand, rand
@@ -11,188 +11,112 @@
 #include <glm/gtc/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale, glm::perspective
 #include "math.h"
 #include <iostream>
-#include <time.h>
+#include <vector>
+
+
+class Circle
+{
+public:
+	std::vector<glm::vec3> vertices; //homemake
+	std::vector<int> indices;
+	double red = 0, green = 0, blue = 0;
+	float degree2radian(const float& degree)
+	{
+		const float pi = 3.14159265358979323846264338327950288;
+		return degree / 180.0f * pi;
+	}
+	Circle(const double radius,double Red,double Green,double Blue)
+	{
+
+		red = Red; green = Green, blue = Blue;
+		//std::vector<glm::vec3> vertices; //homemake
+		vertices.resize(361);
+		vertices[0] = glm::vec3(0.0f, 0.0f, 0.0f);
+		for (int i = 1; i <= 360; i++)
+		{
+			vertices[i] = glm::vec3(radius*cos(degree2radian(i)),radius*sin(degree2radian(i)), 0.0f);
+		}
+		
+		
+		//std::vector<unsigned int> indices;
+		//indices.resize(3 * 3);
+		for (int i = 1; i <= 360; i++)
+		{
+			indices.push_back(0); indices.push_back(i); indices.push_back(i%360+1);
+		}
+		//indices.push_back(0); indices.push_back(12); indices.push_back(1);
+		
+	}
+
+	void setVertex(const std::vector<glm::vec3>& vertices, const int& ix) { //&가 매우중요속도관련
+		glVertex3f(vertices[ix].x, vertices[ix].y, vertices[ix].z);
+	}
+	void draw()
+	{
+		glBegin(GL_TRIANGLES);
+
+		glColor3f(red, green, blue);
+
+		for (int i = 0; i <540; i++) {
+			setVertex(vertices, indices[i]);
+		}
+		glColor3f(red, 1.0, blue);
+		for (int i = 540; i <1080; i++) {
+			setVertex(vertices, indices[i]);
+		}
+	
+
+
+		glEnd();
+	}
+
+};
 
 class CustomGLFW
 {
 public:
-	GLFWwindow *window = nullptr;
+	GLFWwindow * window = nullptr;
 
 	int initialize(const int width, const int height);
 
-	void draw();
+	float my_house2_angle = 0.0f;
 
-	time_t curr;
-	struct tm *Time;
+	void draw();
 
 	float degree2radian(const float& degree)
 	{
 		const float pi = 3.14159265358979323846264338327950288;
-		return degree*pi / 180.0f;
+		return degree / 180.0f * pi;
 	}
 
-	void drawObjects()
 
-	{
+	void drawObjects() {
 
-		using namespace glm;
-
-		using namespace std;
-
-
-
-
-		const float radius = 0.7;
-
-		const vec3  start_pt(radius, 0.0f, 0.0f);
-
-		curr = time(NULL);
-
-		Time = localtime(&curr);//현재 시스템 시간을 받아온다.
-
-		glBegin(GL_POINTS);
-
-		for (float theta = 0.0f; theta < 360.0f; theta += 0.5f) // theta is degree
-
-		{
-
-			const float rth = degree2radian(theta);
-
-			vec3 point;
-
-			glm::mat3 rot_mat; //TODO: make a rotation matrix cos, sin ...
-
-			rot_mat[0][0] = start_pt.x*cos(rth);
-
-			rot_mat[0][1] = -start_pt.y*sin(rth);
-
-			rot_mat[1][0] = start_pt.x*sin(rth);
-
-			rot_mat[1][1] = start_pt.y*cos(rth);
-
-			rot_mat[2][2] = 1.0f;
-
-			rot_mat = glm::transpose(rot_mat);
-
-			point = rot_mat * start_pt;
-
-			glColor3f(0.0f, 0.0f, 1.0f);
-
-			glVertex3f(point.x, point.y, point.z);
-
-		}
-
-		glEnd();
-
-
-		//시계의 침을 시침 분침 초침으로 나누어 그린다.
-		//일반적인 수직좌표계와 다르게 시계는 시작지점이 90도이므로 +90도를 해준다.
-		//시간은 time.h의 헤더를 추가해준다.tm구조체를 이용하여 hour,min,sec를 받는다.
-		//시
-
-		glBegin(GL_POINTS);
-
-		glColor3f(1.0f, 0.0f, 0.0f);
-
-		const glm::vec3 start_pt2(0.0f, 0.0f, 0.0f);
-		//시침의 경우 분침에 따라서 한시간 사이 간격을 이동하기 때문에 분침의 위치에 따라 각도를 더해준다.
-		//시계에는 12시간이 나타나 있고,원은 360도 이므로 *30해준다.
-		//한 시간 사이의 간격은 30도이고 한시간에 60분이므로 분/2를 하여 각도를 더해준다.
-		const glm::vec3 end_pt2(cos(degree2radian((Time->tm_hour%12)*30.0f+(Time->tm_min/2.0f)+90.0f)), sin(degree2radian((Time->tm_hour)%12*30.0f+(Time->tm_min/2.0f)+90.0f)), 0.0);
 		
-		const glm::vec3 dir = end_pt2 - start_pt2;
+		Circle sun(0.3f, 1.0f, 0.0f, 0.0f);
+		//TODO:update geometry
+		//for (int i = 0; i<myHouse.vertices.size(); ++i)
+		//myHouse.vertices[i].x += 0.001f;
 
-		const glm::vec3 unit_dir = glm::normalize(dir); //단위벡터만듬
+		my_house2_angle += 1.0f;
 
+		glPushMatrix();
+		glRotatef(my_house2_angle, 0.0f, 0.0f, 1.0f);
+		glPushMatrix();
+		glTranslatef(0.3f*cos(degree2radian(my_house2_angle)), 0.3f*sin(degree2radian(my_house2_angle)), 0.0f);
+		glScalef(0.5f, 0.5f, 1.0f);
+		sun.draw();
+		glPopMatrix();
 
-
-
-		for (float i = 0; i <= 0.3; i += 1.0f / 512.0f)
-
-		{ //숫자 나누기할때는 2의 제곱수로 나누어야 오차가 안쌓인다.
-
-			float mid_x = start_pt2.x + i * (end_pt2.x - start_pt2.x);
-
-			float mid_y = start_pt2.y + i * (end_pt2.y - start_pt2.y);
-
-			const glm::vec3 mid = start_pt2 + i * unit_dir;
-
-			glVertex3f(-mid.x, mid.y, 0.0f);
-
-		}
-
-		glEnd();
-
-		//분
-
-		glBegin(GL_POINTS);
-
-		glColor3f(0.0f, 1.0f, 0.0f);
-
-		//const glm::vec3 start_pt3(0.0f, 0.0f, 0.0f);
-		//한시간에 60분이고 원은 360도이기 때문에 *6 해준다.
-		const glm::vec3 end_pt3(cos(degree2radian((float)((Time->tm_min)*6.0f)+90.0f)), sin(degree2radian((float)((Time->tm_min)*6.0f)+90.0f)), 0.0);
-		const glm::vec3 dir2 = end_pt3 - start_pt2;
-
-		const glm::vec3 unit_dir2 = glm::normalize(dir2); //단위벡터만듬
-
-
-
-
-		for (float i = 0; i <= 0.4f; i += 1.0f / 512.0f)
-
-		{ //숫자 나누기할때는 2의 제곱수로 나누어야 오차가 안쌓인다.
-
-			float mid_x = start_pt2.x + i * (end_pt3.x - start_pt2.x);
-
-			float mid_y = start_pt2.y + i * (end_pt3.y - start_pt2.y);
-
-			const glm::vec3 mid = start_pt2 + i * unit_dir2;
-
-			glVertex3f(-mid.x, mid.y, 0.0f);
-
-		}
-
-		glEnd();
-
-
-
-		//초
-		glBegin(GL_POINTS);
-
-		glColor3f(0.0f, 0.0f, 0.0f);
-
-		//const glm::vec3 start_pt3(0.0f, 0.0f, 0.0f);
-		//1분은 60초이고 원은 360도이기 때문에 *6해준다.
-		const glm::vec3 end_pt4(cos(degree2radian((float)((Time->tm_sec)*6.0f+90.0f))), sin(degree2radian((float)((Time->tm_sec)*6.0f)+90.0f)), 0.0);
-
-		const glm::vec3 dir3 = end_pt4 - start_pt2;
-		
-		const glm::vec3 unit_dir3 = glm::normalize(dir3); //단위벡터만듬
-
-
-
-
-		for (float i = 0; i <= 0.48f; i += 1.0f / 512.0f)
-
-		{ //숫자 나누기할때는 2의 제곱수로 나누어야 오차가 안쌓인다.
-
-			float mid_x = start_pt2.x + i * (end_pt4.x - start_pt2.x);
-
-			float mid_y = start_pt2.y + i * (end_pt4.y - start_pt2.y);
-
-			const glm::vec3 mid = start_pt2 + i * unit_dir3;
-
-			glVertex3f(-mid.x, mid.y, 0.0f);
-
-		}
-
-		glEnd();
-
-
-
-
-
+		glPushMatrix();
+		glTranslatef(0.0f, 0.4, 0.0f);
+		//glTranslatef(0.0f, 0.5f, 0.0f);//이 함수는 누적이 된다
+		glScalef(0.3f, 0.3f, 1.0f);
+		//glRotatef(my_house2_angle * 5.0f, 0.0f, 0.0f, 1.0f);
+		//glRotatef(my_house2_angle, 0.0f, 1.0f);
+		//myHouse2.draw();
+		glPopMatrix();
+		glPopMatrix();
 	}
-
 };
+

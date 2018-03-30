@@ -27,6 +27,12 @@ public:
 	
 	void drawObj();
 
+	void setVertex(const std::vector<glm::vec3>& vertices, onst int& ix)
+	{
+		glVertex3f(vertices[ix].x, vertices[ix].y, vertices[ix].z);
+
+	}
+
 	void drawObjects()
 
 	{
@@ -35,7 +41,7 @@ public:
 
 		using namespace std;
 
-
+		std::vector< glm:: vec3 >vertices;
 
 
 
@@ -46,14 +52,13 @@ public:
 		
 
 	}
-
-};
-
 	float degree2radian(const float & degree)
 	{
 		const float pi = 3.14159265358974;
 
 		return degree / 180.0f*pi;
 	}
+
 };
+
 
