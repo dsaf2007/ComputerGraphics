@@ -248,6 +248,7 @@ public:
 
 	vec3 midcolor=vec3(0.5f,0.5f,0.5f);
 	vec3 mulcolor = vec3(5.0f, 5.0f, 5.0f);
+	vec3 mulcolor2 = vec3(5.0f, -5.0f, 5.0f);
 
 		std::vector<glm::vec3> vertices;
 		vertices.resize(13);
@@ -287,11 +288,20 @@ public:
 
 		for (int i = 0; i < 13; i++)
 		{
-			colors1[i] =mulcolor*vertices1[i];
+			colors1[i] =mulcolor2*vertices1[i];
 		}
 
-
-
+		std::vector<glm::vec3> colors2;
+		colors2.resize(24);
+		
+		for (int i = 0; i < 12; i++)
+		{
+			colors2[i] = colors[i];
+		}
+		for (int i = 12; i < 24; i++)
+		{
+			colors2[i] = colors1[i - 12];
+		}
 		std::vector<Triangle>triangles1;
 		triangles1.resize(12);
 		for (int i = 0; i < 12; i++)
@@ -301,24 +311,25 @@ public:
 
 		std::vector<glm::vec3> vertices2;
 		vertices2.resize(24);
-		for (int i = 1; i < 13; i++)
+		for (int i = 0; i < 12; i++)
 		{
-			vertices2[i] = vertices[i];
+			vertices2[i] = vertices[i+1];
 		}
-		for (int i = 13; i < 24; i)
+		for (int i = 12; i < 24; i++)
 		{
-			vertices2[i] = vertices1[i + 1];
+			vertices2[i] = vertices1[i -11];
 		}
 		std::vector<Triangle>triangles2;
-		triangles1.resize(24);
+		triangles2.resize(24);
 		for (int i = 0; i < 12; i++)
 		{
-			triangles2[i] = Triangle(i+12,i,i+1);
+			triangles2[i] = Triangle(i+12,i,(i+1)%12);
 		}
-		for (int i = 0; i < 12; i++)
+		for (int i = 0; i < 11; i++)
 		{
-			triangles2[i + 12] = Triangle(i + 1, (i + 13) % 24, i);
+			triangles2[i + 12] = Triangle(i+13, i+12,i+1);
 		}
+		triangles2[23] = Triangle(0, 12, 23);
 
 
 
@@ -330,10 +341,10 @@ public:
 		//assingrandomcolor(vertex_color);
 
 		static float angle = 0.0f; //static안좋음 나중에 변수 따로만들어서 하기
-		angle += 10.0f;
+		angle += 5.0f;
 		glPushMatrix();
-		glRotatef(15.0f, 1.0f, 0.0f, 0.0f);
-		//glRotatef(angle, 0.0f, 1.0f, 0.0f);
+		glRotatef(angle, 1.0f, 0.0f, 0.0f);
+		glRotatef(angle, 0.0f, 1.0f, 0.0f);
 		//glRotatef(15.0f, 0.0f, 0.0f, 1.0f);
 		
 
@@ -402,15 +413,15 @@ public:
 			glVertex3fv(&vertices1[triangles1[i][2]][0]);
 
 		}
-		for (int i = 0; i < triangles2.size(); i++) {
+		for (int i = 0; i <triangles2.size(); i++) {
 			glColor3f(1.0f, 1.0f, 0.0f);
-			glColor3fv(&colors[triangles2[i%12][0]][0]);
+			glColor3fv(&colors2[triangles2[i][0]][0]);
 			glVertex3fv(&vertices2[triangles2[i][0]][0]);
 
-			glColor3fv(&colors[triangles2[i%12][1]][0]);
+			glColor3fv(&colors2[triangles2[i][1]][0]);
 			glVertex3fv(&vertices2[triangles2[i][1]][0]);
 
-			glColor3fv(&colors[triangles2[i%12][2]][0]);
+			glColor3fv(&colors2[triangles2[i][2]][0]);
 			glVertex3fv(&vertices2[triangles2[i][2]][0]);
 
 		}
