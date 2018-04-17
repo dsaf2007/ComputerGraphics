@@ -15,62 +15,7 @@
 //코드정리도할것
 
 
-class Circle
-{
-public:
-	std::vector<glm::vec3> vertices; //homemake
-	std::vector<int> indices;
-	double red = 0, green = 0, blue = 0;
-	float degree2radian(const float& degree)
-	{
-		const float pi = 3.14159265358979323846264338327950288;
-		return degree / 180.0f * pi;
-	}
-	Circle(const double radius, double Red, double Green, double Blue)//행성모양인 원을 만들 생성자.
-	{//원점과 원위의 두점을 꼭지점으로 하는 삼각형을 여러개 그려서 원을 만든다.
 
-		red = Red; green = Green, blue = Blue;//원의 색을 정할 변수.
-											  //std::vector<glm::vec3> vertices; //homemake
-		vertices.resize(361);//vertices의 갯수를 지정. 원점을 생성하고 0도부터 360까지 할 것이므로 361개
-		vertices[0] = glm::vec3(0.0f, 0.0f, 0.0f);//원의 원점.
-		for (int i = 1; i <= 360; i++)//0도부터 360도까지 점을 하나씩 배열에 지정한다.
-		{
-			vertices[i] = glm::vec3(radius*cos(degree2radian(i)), radius*sin(degree2radian(i)), 0.0f);//1도씩 옮겨간다.
-		}
-
-
-		//std::vector<unsigned int> indices;
-		//indices.resize(3 * 3);
-		for (int i = 1; i <= 360; i++)//삼각형을 각각 pushback한다.
-		{
-			indices.push_back(0); indices.push_back(i); indices.push_back(i % 360 + 1);
-		}
-
-	}
-
-	void setVertex(const std::vector<glm::vec3>& vertices, const int& ix) {
-		glVertex3f(vertices[ix].x, vertices[ix].y, vertices[ix].z);
-	}
-	void draw()
-	{
-		glBegin(GL_TRIANGLES);
-
-		glColor3f(red, green, blue);
-		//완벽한 원이되면 자전하는것이 눈에 안보이기 때문에 절반을 나누어서 반은 검정색으로 한다.
-		for (int i = 0; i <540; i++) {
-			setVertex(vertices, indices[i]);//setVertex로 그린다.
-		}
-		glColor3f(0.0, 0.0, 0.0);
-		for (int i = 540; i <1080; i++) {
-			setVertex(vertices, indices[i]);
-		}
-
-
-
-		glEnd();
-	}
-
-};
 
 
 class CustomGLFW
@@ -126,9 +71,9 @@ public:
 			// circle drawing example
 			const float radius = 1.0f;
 
-			vec3 mulColor = vec3(5.0f, 5.0f, 5.0f);
+			vec3 mulColor = vec3(5.0f, 5.0f, 5.0f);//색을 나타내기 위해 곱해줄 벡터
 
-			std::vector<glm::vec3> vertices;
+			std::vector<glm::vec3> vertices;//정육면체의 좌표
 			vertices.resize(8);
 			vertices[0] = vec3(-0.2f, 0.2f, -0.2f);
 			vertices[1] = vec3(-0.2f, -0.2f, -0.2f);
@@ -144,11 +89,11 @@ public:
 			color.resize(8);
 			for (int i = 0; i < 8; i++)
 			{
-				color[i] = mulColor * vertices[i];
+				color[i] = mulColor * vertices[i];//좌표값에 5를 곱한 색을 나타내는 백터
 			}
 
 
-			std::vector<Triangle>triangles;
+			std::vector<Triangle>triangles;//std라이브러리의 벡터를 이용해 좌표 number을 배열에 저장.
 			triangles.resize(4);
 			triangles[0] = Triangle(0, 2, 7);
 			triangles[1] = Triangle(5, 2, 0);
@@ -156,28 +101,12 @@ public:
 			triangles[3] = Triangle(5, 0, 7);
 
 
-			/*   std::vector<unsigned int> indices;
-			indices.push_back(0);
-			indices.push_back(1);
-			indices.push_back(2);
-			indices.push_back(0);
-			indices.push_back(2);
-			indices.push_back(3);
-			indices.push_back(0);
-			indices.push_back(3);
-			indices.push_back(4);*/
-			std::vector<glm::vec3> vertex_color;
-			std::vector<glm::vec3> triangle_color;
-			triangle_color.resize(4);
-			vertex_color.resize(8);
-			assingrandomcolor(triangle_color);
-			assingrandomcolor(vertex_color);
 
 			static float angle = 0.0f; //static안좋음 나중에 변수 따로만들어서 하기
 			angle += 10.0f;
 			glPushMatrix();
-			glRotatef(15.0f, 1.0f, 0.0f, 0.0f);
-			glRotatef(angle, 0.0f, 1.0f, 0.0f);
+			glRotatef(15.0f, 1.0f, 0.0f, 0.0f);//x축으로 15도 회전
+			glRotatef(angle, 0.0f, 1.0f, 0.0f);//y축으로 계속 회전
 			
 
 			//axes
@@ -207,11 +136,9 @@ public:
 			glBegin(GL_POINTS);
 			glColor3f(0.0f, 0.0f, 1.0f);
 			for (int i = 0; i < 8; ++i) {
-				glVertex3fv(&vertices[i][0]);
+				glVertex3fv(&vertices[i][0]);//꼭짓점을 찍는다.
 			}
-			for (int i = 0; i < 8; ++i) {
-				glVertex3fv(&color[i][0]);
-			}
+		
 			glEnd();
 
 			// draw triangle
@@ -221,14 +148,14 @@ public:
 								   //   glColor3f(0.0f, 0.0f, 1.0f);
 
 			for (int i = 0; i < triangles.size(); i++) {
-				glColor3fv(&color[triangles[i][0]][0]);
-				glVertex3fv(&vertices[triangles[i][0]][0]);
+				glColor3fv(&color[triangles[i][0]][0]);//triangles의 좌표를 받아 색을 입힌다
+				glVertex3fv(&vertices[triangles[i][0]][0]);//triangles 벡터의 첫번째 값,즉 x좌표를 그린다.
 
 				glColor3fv(&color[triangles[i][1]][0]);
-				glVertex3fv(&vertices[triangles[i][1]][0]);
+				glVertex3fv(&vertices[triangles[i][1]][0]);//triangles 벡터의 두번째 값,즉 y좌표를 그린다.
 
 				glColor3fv(&color[triangles[i][2]][0]);
-				glVertex3fv(&vertices[triangles[i][2]][0]);
+				glVertex3fv(&vertices[triangles[i][2]][0]); //triangles 벡터의 마지막 값, 즉 y좌표를 그린다.
 
 			}
 
@@ -248,12 +175,12 @@ public:
 
 	vec3 midcolor=vec3(0.5f,0.5f,0.5f);
 	vec3 mulcolor = vec3(5.0f, 5.0f, 5.0f);
-	vec3 mulcolor2 = vec3(5.0f, -5.0f, 5.0f);
+	vec3 mulcolor2 = vec3(5.0f, -5.0f, 5.0f);//아랫면은 y좌표가 음수이기 때문에 색이 너무 어둡게 나와서 다른 값을 곱해준다.
 
 		std::vector<glm::vec3> vertices;
 		vertices.resize(13);
-		vertices[0] = vec3(0.0f, 0.3f, 0.0f);
-		for (int i = 1; i < 13; i++)
+		vertices[0] = vec3(0.0f, 0.3f, 0.0f);//윗면의 원점
+		for (int i = 1; i < 13; i++)//원을 12개의 삼각형으로 나누어 그리기 때문에 12개위 원위의 점을 찍는다.
 		{
 			vertices[i] = vec3(0.2*cos(degree2radian(30*i)), 0.3f,0.2*sin(degree2radian(30*i)));
 		}
@@ -270,31 +197,37 @@ public:
 		triangles.resize(12);
 		for (int i = 0; i < 12; i++)
 		{
-			triangles[i] = Triangle(0,(i+1)%12+1, i+1);
+			triangles[i] = Triangle(0,(i+1)%12+1, i+1);//마지막 삼각형은 첫번째 점을 다시 찍어야 하기 때문에 나머지 연산자를 이용한다.
 		}
 
 
 
-		std::vector<glm::vec3> vertices1;
+		std::vector<glm::vec3> vertices1;//아랫면을 그리기 위한 vertices
 		vertices1.resize(13);
-		vertices1[0] = vec3(0.0f, -0.3f, 0.0f);
-		for (int i = 1; i < 13; i++)
+		vertices1[0] = vec3(0.0f, -0.3f, 0.0f);//아랫면의 원점
+		for (int i = 1; i < 13; i++)//12등분하여 삼각형의 좌표를 찍는다.
 		{
 			vertices1[i] = vec3(0.2*cos(degree2radian(30 * i)), -0.3f, 0.2*sin(degree2radian(30 * i)));
 		}
 
-		std::vector<glm::vec3> colors1;
+		std::vector<glm::vec3> colors1;//아랫면의 색.
 		colors1.resize(13);
 
 		for (int i = 0; i < 13; i++)
 		{
 			colors1[i] =mulcolor2*vertices1[i];
 		}
+		std::vector<Triangle>triangles1;
+		triangles1.resize(12);
+		for (int i = 0; i < 12; i++)
+		{
+			triangles1[i] = Triangle(0, i + 1, (i + 1) % 12 + 1);//윗면과 마찬가지로 1번째 점을 그리기 위해 나머지 연산자 이용
+		}
 
 		std::vector<glm::vec3> colors2;
-		colors2.resize(24);
+		colors2.resize(24);//옆면의 색을 위한 vector
 		
-		for (int i = 0; i < 12; i++)
+		for (int i = 0; i < 12; i++)//colors2에 colors와 colors1의 값을 차례대로 넣는다.
 		{
 			colors2[i] = colors[i];
 		}
@@ -302,43 +235,34 @@ public:
 		{
 			colors2[i] = colors1[i - 12];
 		}
-		std::vector<Triangle>triangles1;
-		triangles1.resize(12);
-		for (int i = 0; i < 12; i++)
-		{
-			triangles1[i] = Triangle(0, i+1,(i + 1) % 12 + 1);
-		}
-
-		std::vector<glm::vec3> vertices2;
+		
+	
+		std::vector<glm::vec3> vertices2;//옆면을 그리기 위한 vertices.옆면을 그리기 위해서는 윗면과 아랫면의 점 모두가 필요하기 때문에(원점 제외) 24로 사이즈를 정한다.
 		vertices2.resize(24);
-		for (int i = 0; i < 12; i++)
+		for (int i = 0; i < 12; i++)//윗면의 값 입력
 		{
 			vertices2[i] = vertices[i+1];
 		}
-		for (int i = 12; i < 24; i++)
+		for (int i = 12; i < 24; i++)//아랫면의 값 입력
 		{
 			vertices2[i] = vertices1[i -11];
 		}
-		std::vector<Triangle>triangles2;
+		std::vector<Triangle>triangles2;//옆면 벡터
+		//옆면은 사각형이 여러개 붙은 형태이기 때문에 그 사각형을 삼각형 두개로 나누어서 그린다.
 		triangles2.resize(24);
 		for (int i = 0; i < 12; i++)
 		{
-			triangles2[i] = Triangle(i+12,i,(i+1)%12);
+			triangles2[i] = Triangle(i+12,i,(i+1)%12);//옆면 삼각형의 일부. 마찬가지로 첫번째 점을 찍어야해서 나머지 연산자 이용
 		}
 		for (int i = 0; i < 11; i++)
 		{
-			triangles2[i + 12] = Triangle(i+13, i+12,i+1);
+			triangles2[i + 12] = Triangle(i+13, i+12,i+1);//첫번째 점을 찍어야하는데 index가 12이기때문에 나머지 연산자 사용이 어려워서 따로 정하였다.
 		}
-		triangles2[23] = Triangle(0, 12, 23);
+		triangles2[23] = Triangle(0, 12, 23);//마지막 삼각형
 
 
 
-		//std::vector<glm::vec3> vertex_color;
-		//std::vector<glm::vec3> triangle_color;
-		//triangle_color.resize(4);
-		//vertex_color.resize(8);
-		//assingrandomcolor(triangle_color);
-		//assingrandomcolor(vertex_color);
+	
 
 		static float angle = 0.0f; //static안좋음 나중에 변수 따로만들어서 하기
 		angle += 5.0f;
@@ -388,7 +312,7 @@ public:
 		glBegin(GL_TRIANGLES); // 
 							   //   glColor3f(0.0f, 0.0f, 1.0f);
 
-		for (int i = 0; i < triangles.size(); i++) {
+		for (int i = 0; i < triangles.size(); i++) {//윗면 렌더링
 			glColor3f(1.0f, 1.0f, 0.0f);
 			glColor3fv(&colors[triangles[i][0]][0]);
 			glVertex3fv(&vertices[triangles[i][0]][0]);
@@ -401,7 +325,7 @@ public:
 
 		}
 
-		for (int i = 0; i < triangles.size(); i++) {
+		for (int i = 0; i < triangles.size(); i++) {//아랫면 랜더링
 			glColor3f(1.0f, 1.0f, 0.0f);
 			glColor3fv(&colors1[triangles[i][0]][0]);
 			glVertex3fv(&vertices1[triangles1[i][0]][0]);
@@ -413,7 +337,7 @@ public:
 			glVertex3fv(&vertices1[triangles1[i][2]][0]);
 
 		}
-		for (int i = 0; i <triangles2.size(); i++) {
+		for (int i = 0; i <triangles2.size(); i++) {//옆면
 			glColor3f(1.0f, 1.0f, 0.0f);
 			glColor3fv(&colors2[triangles2[i][0]][0]);
 			glVertex3fv(&vertices2[triangles2[i][0]][0]);

@@ -62,12 +62,14 @@ int main(void)
 	// Ensure we can capture the escape key being pressed below
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
 
-	// Dark blue background
+	// Dark white background
 	glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
 
 	GLuint VertexArrayID;
-	glGenVertexArrays(1, &VertexArrayID);
-	glBindVertexArray(VertexArrayID);
+	glGenVertexArrays(1, &VertexArrayID);//new in c++
+	glBindVertexArray(VertexArrayID);//send data to GPU directly
+
+	//running time에 shader language compile
 
 	// Create and compile our GLSL program from the shaders
 	GLuint programID = LoadShaders("SimpleVertexShader.vertexshader", "SimpleFragmentShader.fragmentshader");
@@ -95,7 +97,7 @@ int main(void)
 	glGenBuffers(1, &vertexbuffer2);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer2);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(square_vertices), square_vertices, GL_STATIC_DRAW);
-
+	float angle = 0.0f;
 	do {
 
 		// Clear the screen
@@ -103,10 +105,11 @@ int main(void)
 
 		// Use our shader
 		glUseProgram(programID);
-
-		GLuint MatrixID = glGetUniformLocation(programID, "MVP");
+		
+		angle += 10.0f;
+		GLuint MatrixID = glGetUniformLocation(programID, "MVP");//
 		//glm::mat4 Projection = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
-		glm::mat4 Projection = glm::ortho(-1.0f,1.0f,-1.0f,1.0f,0.0f,100.0f); // In world coordinates
+		glm::mat4 Projection = glm::ortho(-1.0f,1.0f,-1.0f,1.0f,0.0f,100.0f); // In world coordinates   //rendering pipeline
 
 		// Camera matrix
 		glm::mat4 View = glm::lookAt(
@@ -114,11 +117,13 @@ int main(void)
 			glm::vec3(0.5, 0.5, 0), // and looks at the origin
 			glm::vec3(0, 1, 0)  // Head is up (set to 0,-1,0 to look upside-down)
 		);
-
-		glm::mat4 Model = glm::mat4(1.0f);
+		
+		glm::mat4 Model2 = glm::rotate(glm::mat4(1.0f),radians(angle),glm::vec3(1.0f,0.0f,0.0f));
+		glm::mat4 Model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 		glm::mat4 MVP = Projection * View * Model;
+		glm::mat4 MVP2 = Projection * View * Model2;
 
-		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
+		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP2[0][0]);
 
 		// 1rst attribute buffer : vertices
 		glEnableVertexAttribArray(0);
@@ -135,6 +140,7 @@ int main(void)
 		// Draw the triangle !
 		glDrawArrays(GL_LINE_LOOP, 0, 3); // 6 vertices
 
+		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
 
 		glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer2);
 		glVertexAttribPointer(
@@ -168,3 +174,7 @@ int main(void)
 
 	return 0;
 }
+
+
+
+//MVP는 4차 정사각 행렬
