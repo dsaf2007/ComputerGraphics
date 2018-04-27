@@ -41,7 +41,7 @@ int main(void)
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	// Open a window and create its OpenGL context
-	window = glfwCreateWindow(1024, 768, "Tutorial 02 - Red triangle", NULL, NULL);
+	window = glfwCreateWindow(1024, 1024, "Tutorial 02 - Red triangle", NULL, NULL);
 	if (window == NULL) {
 		fprintf(stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n");
 		getchar();
@@ -81,10 +81,48 @@ int main(void)
 	};
 
 	const GLfloat square_vertices[] = {
+
+		//¾Æ·¡
 		0.0f, 0.0f, 0.0f,
 		1.0f, 0.0f, 0.0f,
 		1.0f, 1.0f, 0.0f,
-		0.0f, 1.0f, 0.0f,
+		
+		1.0f,1.0f,0.0f,
+		0.0f,1.0f,0.0f,
+		0.0f,0.0f,0.0f,
+		//¿·1
+		0.0f,0.0f,0.0f,
+		0.0f,1.0f,0.0f,
+		0.0f,1.0f,1.0f,
+
+		0.0f,1.0f,1.0f,
+		0.0f,0.0f,1.0f,
+		0.0f,0.0f,0.0f,
+		//¿·2
+		0.0f,0.0f,0.0f,
+		1.0f,0.0f,0.0f,
+		1.0f,0.0f,1.0f,
+		
+		1.0f,0.0f,1.0f,
+		0.0f,0.0f,1.0f,
+		0.0f,0.0f,0.0f,
+		//À§
+		0.0f,0.0f,1.0f,
+		0.0f,1.0f,1.0f,
+		1.0f,1.0f,1.0f,
+		
+		1.0f,1.0f,1.0f,
+		1.0f,0.0f,1.0f,
+		0.0f,0.0f,1.0f,
+		//¿·3
+		1.0f,1.0f,0.0f,
+		1.0f,0.0f,0.0f,
+		1.0f,0.0f,1.0f,
+
+		1.0f,0.0f,1.0f,
+		1.0f,1.0f,1.0f,
+		1.0f,1.0f,0.0f,
+
 	};
 
 
@@ -106,7 +144,7 @@ int main(void)
 		// Use our shader
 		glUseProgram(programID);
 		
-		angle += 10.0f;
+		angle += 0.5f;
 		GLuint MatrixID = glGetUniformLocation(programID, "MVP");//
 		//glm::mat4 Projection = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
 		glm::mat4 Projection = glm::ortho(-1.0f,1.0f,-1.0f,1.0f,0.0f,100.0f); // In world coordinates   //rendering pipeline
@@ -118,27 +156,18 @@ int main(void)
 			glm::vec3(0, 1, 0)  // Head is up (set to 0,-1,0 to look upside-down)
 		);
 		
-		glm::mat4 Model2 = glm::rotate(glm::mat4(1.0f),radians(angle),glm::vec3(1.0f,0.0f,0.0f));
+		glm::mat4 Model2 = glm::rotate(glm::mat4(1.0f),radians(angle),glm::vec3(1.0f,1.0f,0.0f));
 		glm::mat4 Model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-		glm::mat4 MVP = Projection * View * Model;
+		glm::mat4 MVP = Projection * View * Model2;
 		glm::mat4 MVP2 = Projection * View * Model2;
 
-		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP2[0][0]);
 
 		// 1rst attribute buffer : vertices
 		glEnableVertexAttribArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-		glVertexAttribPointer(
-			0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
-			3,                  // size
-			GL_FLOAT,           // type
-			GL_FALSE,           // normalized?
-			0,                  // stride
-			(void*)0            // array buffer offset
-		);
+
 
 		// Draw the triangle !
-		glDrawArrays(GL_LINE_LOOP, 0, 3); // 6 vertices
+		//glDrawArrays(GL_LINE_LOOP, 0, 3); // 6 vertices
 
 		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
 
@@ -152,7 +181,7 @@ int main(void)
 			(void*)0            // array buffer offset
 		);
 
-		glDrawArrays(GL_LINE_LOOP, 0, 4); // 6 vertices
+		glDrawArrays(GL_TRIANGLES, 0, sizeof(square_vertices)); // 6 vertices
 
 		glDisableVertexAttribArray(0);
 
