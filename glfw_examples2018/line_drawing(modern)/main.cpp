@@ -82,47 +82,56 @@ int main(void)
 
 	const GLfloat square_vertices[] = {
 
-		//¾Æ·¡
+		//¾Æ·¡ 0
 		0.0f, 0.0f, 0.0f,
-		1.0f, 0.0f, 0.0f,
-		1.0f, 1.0f, 0.0f,
+		0.5f, 0.0f, 0.0f,
+		0.5f, 0.5f, 0.0f,
 		
-		1.0f,1.0f,0.0f,
-		0.0f,1.0f,0.0f,
+		0.5f,0.5f,0.0f,
+		0.0f,0.5f,0.0f,
 		0.0f,0.0f,0.0f,
-		//¿·1
+		//¿·1 0
 		0.0f,0.0f,0.0f,
-		0.0f,1.0f,0.0f,
-		0.0f,1.0f,1.0f,
+		0.0f,0.5f,0.0f,
+		0.0f,0.5f,0.5f,
 
-		0.0f,1.0f,1.0f,
-		0.0f,0.0f,1.0f,
+		0.0f,0.5f,0.5f,
+		0.0f,0.0f,0.5f,
 		0.0f,0.0f,0.0f,
-		//¿·2
+		//¿·2 0
 		0.0f,0.0f,0.0f,
-		1.0f,0.0f,0.0f,
-		1.0f,0.0f,1.0f,
+		0.5f,0.0f,0.5f,
+		0.5f,0.0f,0.0f,
 		
-		1.0f,0.0f,1.0f,
-		0.0f,0.0f,1.0f,
+		0.0f,0.0f,0.5f,
+		0.5f,0.0f,0.5f,
 		0.0f,0.0f,0.0f,
-		//À§
-		0.0f,0.0f,1.0f,
-		0.0f,1.0f,1.0f,
-		1.0f,1.0f,1.0f,
+		//À§ 0
+		0.0f,0.0f,0.5f,
+		0.0f,0.5f,0.5f,
+		0.5f,0.5f,0.5f,
 		
-		1.0f,1.0f,1.0f,
-		1.0f,0.0f,1.0f,
-		0.0f,0.0f,1.0f,
-		//¿·3
-		1.0f,1.0f,0.0f,
-		1.0f,0.0f,0.0f,
-		1.0f,0.0f,1.0f,
+		0.0f,0.0f,0.5f,
+		0.5f,0.5f,0.5f,	
+		0.5f,0.0f,0.5f,
+		
+		//¿·3 0
+		0.5f,0.5f,0.0f,
+		0.5f,0.0f,0.0f,
+		0.5f,0.0f,0.5f,
 
-		1.0f,0.0f,1.0f,
-		1.0f,1.0f,1.0f,
-		1.0f,1.0f,0.0f,
+		0.5f,0.0f,0.5f,
+		0.5f,0.5f,0.5f,
+		0.5f,0.5f,0.0f,
 
+		//¿·4 0
+		0.0f,0.5f,0.0f,
+		0.5f,0.5f,0.0f,
+		0.5f,0.5f,0.5f,
+
+		0.5f,0.5f,0.5f,
+		0.0f,0.5f,0.5f,
+		0.0f,0.5f,0.0f
 	};
 
 
@@ -139,12 +148,12 @@ int main(void)
 	do {
 
 		// Clear the screen
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
 		// Use our shader
 		glUseProgram(programID);
 		
-		angle += 0.5f;
+		angle += 0.2f;
 		GLuint MatrixID = glGetUniformLocation(programID, "MVP");//
 		//glm::mat4 Projection = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
 		glm::mat4 Projection = glm::ortho(-1.0f,1.0f,-1.0f,1.0f,0.0f,100.0f); // In world coordinates   //rendering pipeline
@@ -156,7 +165,7 @@ int main(void)
 			glm::vec3(0, 1, 0)  // Head is up (set to 0,-1,0 to look upside-down)
 		);
 		
-		glm::mat4 Model2 = glm::rotate(glm::mat4(1.0f),radians(angle),glm::vec3(1.0f,1.0f,0.0f));
+		glm::mat4 Model2 = glm::rotate(glm::mat4(1.0f),radians(angle),glm::vec3(0.5f,0.5f,0.0f));
 		glm::mat4 Model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 		glm::mat4 MVP = Projection * View * Model2;
 		glm::mat4 MVP2 = Projection * View * Model2;
@@ -164,7 +173,7 @@ int main(void)
 
 		// 1rst attribute buffer : vertices
 		glEnableVertexAttribArray(0);
-
+	
 
 		// Draw the triangle !
 		//glDrawArrays(GL_LINE_LOOP, 0, 3); // 6 vertices
@@ -182,7 +191,7 @@ int main(void)
 		);
 
 		glDrawArrays(GL_TRIANGLES, 0, sizeof(square_vertices)); // 6 vertices
-
+		glEnable(GL_DEPTH_TEST);
 		glDisableVertexAttribArray(0);
 
 		// Swap buffers
