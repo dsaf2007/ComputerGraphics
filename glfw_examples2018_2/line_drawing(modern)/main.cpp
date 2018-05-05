@@ -1,9 +1,3 @@
-/*
-
-http://www.opengl-tutorial.org/beginners-tutorials/
-https://github.com/opengl-tutorials/ogl
-
-*/
 
 // Include standard headers
 #include <stdio.h>
