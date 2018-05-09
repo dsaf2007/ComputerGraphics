@@ -11,6 +11,8 @@ void main()
 	// Output color = red 
 	//color = vec3(0,0,1);
 	
-	color = 2*posColor;
+	//color = posColor/10;
+
+	color=vec3(1.0f,177.0f/255.0f,130.0f/255.0f);
 
 }

@@ -22,8 +22,41 @@
 #include "shader.hpp"
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
+#include "glm/detail/func_trigonometric.hpp"
 const int width_window = 640;
 const int height_window = 640;
+
+float x, y= 0.0f,z=1.0f;//float for rotation
+float angle = 0.0f;
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+	if (key == GLFW_KEY_UP && action == GLFW_PRESS)
+	{
+		x, y, z = 0.0f;
+		x = 1.0f;
+		angle += 10.0f;
+	}
+	if (key == GLFW_KEY_DOWN && action == GLFW_PRESS)
+	{
+		x, y, z = 0.0f;
+		x = 1.0f;
+		angle -= 10.0f;
+	}
+	if (key == GLFW_KEY_LEFT && action == GLFW_PRESS)
+	{
+		x, y, z = 0.0f;
+		y = 1.0f;
+		angle -= 10.0f;
+	}
+	if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS)
+	{
+		x, y, z = 0.0f;
+		y = 1.0f;
+		angle += 10.0f;
+	}
+
+		
+}
 
 int main(void)
 {
@@ -66,7 +99,7 @@ int main(void)
 
 	GLuint programID = LoadShaders("SimpleVertexShader.vertexshader", "SimpleFragmentShader.fragmentshader");
 
-	float angle = 0.0f;
+	
 	// read 3D model from obj file
 	OBJReader obj_reader;
 	obj_reader.readObj("./fixed.obj");
@@ -131,6 +164,10 @@ int main(void)
 
 		// from last week (non-shader version)
 
+		//angle += 10.0f;
+
+		
+
 		glUseProgram(programID);
 		GLuint MatrixID = glGetUniformLocation(programID, "MVP");//
 		glm::mat4 Projection = glm::ortho(-1.2f, 1.2f, -1.2f, 1.2f, -100.0f, 100.0f); // In world coordinates   //rendering pipeline
@@ -141,9 +178,12 @@ int main(void)
 			glm::vec3(0, 0, 0), // and looks at the origin
 			glm::vec3(0, 1, 0)  // Head is up (set to 0,-1,0 to look upside-down)
 		);
+
+		glfwSetKeyCallback(window, key_callback);
+
 		glm::mat4 Model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-		glm::mat4 Model2 = glm::rotate(glm::mat4(1.0f), radians(angle), glm::vec3(0.5f, 0.5f, 0.0f));
-		glm::mat4 MVP = Projection * View * Model;
+		glm::mat4 Model2 = glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3(x, y, z));
+		glm::mat4 MVP = Projection * View * Model2;
 
 		glEnableVertexAttribArray(0);
 
@@ -172,52 +212,7 @@ int main(void)
 		glDisableClientState(GL_COLOR_ARRAY);
 		glDisableClientState(GL_VERTEX_ARRAY);
 
-		//glBegin(GL_TRIANGLES);
-		//for (int i = 0; i < obj_reader.ix_stack_.size(); i++) {
 
-		//	const int ix0 = obj_reader.ix_stack_[i].x_;
-		//	const int ix1 = obj_reader.ix_stack_[i].y_;
-		//	const int ix2 = obj_reader.ix_stack_[i].z_;
-
-		//	const Vector3<float> &v0 = obj_reader.pos_stack_[ix0];
-		//	const Vector3<float> &v1 = obj_reader.pos_stack_[ix1];
-		//	const Vector3<float> &v2 = obj_reader.pos_stack_[ix2];
-
-		//	/*v0.print();
-		//	std::cout << " ";
-		//	v1.print(); std::cout << " ";
-		//	v2.print(); std::cout << std::endl;*/
-
-		//	glColor3f(1.0, 0.0, 0.0);
-		//	glColor3fv(v0.v_);
-		//	glVertex3fv(v0.v_);
-		//	glColor3fv(v1.v_);
-		//	glVertex3fv(v1.v_);
-		//	glColor3fv(v2.v_);
-		//	glVertex3fv(v2.v_);
-		//}
-
-		//glEnd();
-
-		// shader version
-		//glUseProgram(shader_programme);	// activate your shader!
-
-		//// draw here
-		//glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
-		//glEnableVertexAttribArray(0);
-		//glVertexAttribPointer
-		//(
-		//	0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
-		//	3,                  // size (r, g, b)
-		//	GL_FLOAT,           // type
-		//	GL_FALSE,           // normalized?
-		//	0,                  // stride
-		//	(void*)0            // array buffer offset
-		//);
-
-		//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo[2]);
-		//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		//glDrawElements(GL_QUADS, num_quads * 4, GL_UNSIGNED_INT, 0);
 
 		/* Swap front and back buffers */
 		glfwSwapBuffers(window);
